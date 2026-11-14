@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f1f5f9;
+            text-align: center;
+            padding: 40px;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 { color: #2563eb; }
+        button {
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        li { padding: 10px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Management System</h1>
+        <p>Docker Compose Practical</p>
+        <button onclick="loadStudents()">Load Students</button>
+        <ul id="students"></ul>
+        <p id="status">Click the button to load students.</p>
+    </div>
+
+    <script>
+        async function loadStudents() {
+            const status = document.getElementById("status");
+            const list = document.getElementById("students");
+
+            status.innerText = "Loading...";
+            list.innerHTML = "";
+
+            try {
+                const response = await fetch("/api/students");
+
+                if (!response.ok) {
+                    throw new Error("Backend request failed");
+                }
+
+                const students = await response.json();
+
+                students.forEach(student => {
+                    const li = document.createElement("li");
+                    li.textContent =
+                        student.name + " - " + student.course;
+                    list.appendChild(li);
+                });
+
+                status.innerText = "Students loaded successfully!";
+            } catch (error) {
+                status.innerText = "Error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

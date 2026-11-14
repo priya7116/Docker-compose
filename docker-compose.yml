@@ -1,0 +1,52 @@
+services:
+
+  frontend:
+    build: ./frontend
+    container_name: student-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - student-network
+
+  backend:
+    build: ./backend
+    container_name: student-backend
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_USER: student
+      DB_PASSWORD: student123
+      DB_NAME: studentdb
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - student-network
+
+  db:
+    image: mysql:8.0
+    container_name: student-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: studentdb
+      MYSQL_USER: student
+      MYSQL_PASSWORD: student123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks:
+      - student-network
+
+volumes:
+  mysql-data:
+
+networks:
+  student-network:
+    driver: bridge
