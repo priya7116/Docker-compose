@@ -18,6 +18,7 @@ def initialize_database():
         try:
             connection = get_connection()
             cursor = connection.cursor()
+
             cursor.execute("CREATE DATABASE IF NOT EXISTS studentdb")
             cursor.execute("USE studentdb")
             cursor.execute("""
@@ -27,18 +28,25 @@ def initialize_database():
                     course VARCHAR(100)
                 )
             """)
+
             cursor.execute("SELECT COUNT(*) FROM students")
             count = cursor.fetchone()[0]
+
             if count == 0:
-                cursor.execute("INSERT INTO students (name, course) VALUES ('Asha', 'Docker'), ('Rahul', 'Python')")
+                cursor.execute(
+                    "INSERT INTO students (name, course) VALUES ('Asha', 'Docker'), ('Rahul', 'Python')"
+                )
+
             connection.commit()
             cursor.close()
             connection.close()
             print("Database ready!")
             return
+
         except Exception as error:
             print("Waiting for MySQL:", error)
             time.sleep(5)
+
     raise Exception("Database initialization failed")
 
 @app.route("/")
